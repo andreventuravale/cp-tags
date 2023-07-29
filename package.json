@@ -1,0 +1,10 @@
+{
+  "name": "shell-tag",
+  "version": "0.0.0",
+  "description": "",
+  "main": "shell-tag.js",
+  "scripts": {},
+  "keywords": ["shell", "shell script", "child_process"],
+  "author": "andreventuravale <andreventuravale@gmail.com>",
+  "license": "BSD-3-Clause"
+}
