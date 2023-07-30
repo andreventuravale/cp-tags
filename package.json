@@ -1,10 +1,9 @@
 {
   "name": "shell-tag",
-  "version": "0.0.0",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Simple tag around child_process spawn.",
   "main": "shell-tag.js",
-  "scripts": {},
-  "keywords": ["shell", "shell script", "child_process"],
+  "keywords": ["shell", "shell script"],
   "author": "andreventuravale <andreventuravale@gmail.com>",
   "license": "BSD-3-Clause"
 }
