@@ -40,7 +40,7 @@ function follow(childProcess) {
 /**
  * @param {import("node:child_process").spawn} spawn 
  */
-module.exports = function makeSpawnTag(spawn = nodeSpawn) {
+module.exports.makeSpawnTag = function makeSpawnTag(spawn = nodeSpawn) {
 	return async function (tpl, ...tplArgs) {
 		const text = tpl
 			.map((item) => [item.replace(/\n/g, ' '), tplArgs.shift()])
