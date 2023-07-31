@@ -35,7 +35,7 @@ test("Happy path", () => {
 	const $ = makeTag(spawn)
 
 	process.nextTick(() => {
-		ee.emit('close', 0)
+		// ee.emit('close', 0)
 	})
 
 	return $`ls`
