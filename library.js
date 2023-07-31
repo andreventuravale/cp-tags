@@ -1,6 +1,6 @@
-const { spawn: nodeSpawn } = require('node:child_process')
-const { randomUUID } = require('node:crypto')
-const process = require('node:process')
+import { spawn as nodeSpawn } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
+import process from 'node:process'
 
 function follow(childProcess) {
 	return new Promise((resolve, reject) => {
@@ -40,44 +40,40 @@ function follow(childProcess) {
 /**
  * @param {import("node:child_process").spawn} spawn 
  */
-module.exports.makeTag = function makeTag(spawn = nodeSpawn) {
-	return function (tpl, ...tplArgs) {
-		return new Promise((resolve, reject) => {
-			const text = tpl
-				.map((item) => [item.replace(/\n/g, ' '), tplArgs.shift()])
-				.flat()
-				.filter(Boolean)
-				.join('')
+export function makeSpawnTag(spawn = nodeSpawn) {
+	return async function (tpl, ...tplArgs) {
+		const text = tpl
+			.map((item) => [item.replace(/\n/g, ' '), tplArgs.shift()])
+			.flat()
+			.filter(Boolean)
+			.join('')
 
-			let expr = text
+		let expr = text
 
-			const matchVar = /^([\w]+)=('(?:[^']|\\')*'|"(?:[^"]|\\")*"|(?:[^ ]|\\ )+|) */
+		const matchVar = /^([\w]+)=('(?:[^']|\\')*'|"(?:[^"]|\\")*"|(?:[^ ]|\\ )+|) */
 
-			const env = {}
+		const env = {}
 
-			while (matchVar.test(expr)) {
-				const [input, name, value] = matchVar.exec(expr)
+		while (matchVar.test(expr)) {
+			const [input, name, value] = matchVar.exec(expr)
 
-				env[name] = value
+			env[name] = value
 
-				expr = expr.slice(matchVar.lastIndex + input.length)
-			}
+			expr = expr.slice(matchVar.lastIndex + input.length)
+		}
 
-			const sep = randomUUID()
+		const sep = randomUUID()
 
-			const [cmd, ...cmdArgs] = expr
-				.replace(/([^\\]["']|\b) /g, (_, $) => `${$}${sep}`)
-				.split(sep)
+		const [cmd, ...cmdArgs] = expr
+			.replace(/([^\\]["']|\b) /g, (_, $) => `${$}${sep}`)
+			.split(sep)
 
-			console.log('$', text)
+		console.log('$', text)
 
-			const cp = spawn(cmd, cmdArgs, { env: { ...process.env, ...env }, shell: true })
+		const cp = spawn(cmd, cmdArgs, { env: { ...process.env, ...env }, shell: true })
 
-			follow(cp)
-				.then(resp => {
-					resolve(resp)
-				})
-				.catch(reject)
-		})
+		const resp = await follow(cp)
+
+		return resp
 	}
 }

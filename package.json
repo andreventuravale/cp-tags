@@ -1,18 +1,14 @@
 {
-  "name": "spawn-tag",
+  "name": "cp-tags",
   "version": "0.0.0",
-  "description": "Simple tag around child_process spawn.",
+  "type": "module",
+  "description": "Tags around child_process.",
   "main": "./library.js",
-  "scripts": {
-    "test": "node test.js"
-  },
   "keywords": [
     "shell",
     "shell script"
   ],
+  "repository": "",
   "author": "andreventuravale <andreventuravale@gmail.com>",
-  "license": "BSD-3-Clause",
-  "devDependencies": {
-    "testdouble": "^3.18.0"
-  }
+  "license": "BSD-3-Clause"
 }
