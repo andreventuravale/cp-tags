@@ -1,6 +1,6 @@
-import { spawn as nodeSpawn } from 'node:child_process'
-import { randomUUID } from 'node:crypto'
-import process from 'node:process'
+const { spawn: nodeSpawn } = require('node:child_process')
+const { randomUUID } = require('node:crypto')
+const process = require('node:process')
 
 function follow(childProcess) {
 	return new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ function follow(childProcess) {
 /**
  * @param {import("node:child_process").spawn} spawn 
  */
-export function makeSpawnTag(spawn = nodeSpawn) {
+module.exports = function makeSpawnTag(spawn = nodeSpawn) {
 	return async function (tpl, ...tplArgs) {
 		const text = tpl
 			.map((item) => [item.replace(/\n/g, ' '), tplArgs.shift()])

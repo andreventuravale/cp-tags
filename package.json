@@ -1,7 +1,6 @@
 {
   "name": "cp-tags",
-  "version": "0.0.1",
-  "type": "module",
+  "version": "0.0.2",
   "description": "Tags around child_process.",
   "main": "./library.js",
   "keywords": [
