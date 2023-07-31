@@ -1,9 +1,18 @@
 {
-  "name": "shell-tag",
-  "version": "1.0.0",
+  "name": "spawn-tag",
+  "version": "0.0.0",
   "description": "Simple tag around child_process spawn.",
-  "main": "shell-tag.js",
-  "keywords": ["shell", "shell script"],
+  "main": "./library.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "shell",
+    "shell script"
+  ],
   "author": "andreventuravale <andreventuravale@gmail.com>",
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "testdouble": "^3.18.0"
+  }
 }
