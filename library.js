@@ -27,7 +27,7 @@ function follow(childProcess) {
 			if (code === 0) {
 				resolve({ stdout, stderr })
 			} else {
-				const error = new Error(stderr)
+				const error = new Error(stdout + stderr)
 
 				error.code = code
 
