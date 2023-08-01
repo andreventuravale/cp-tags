@@ -4,7 +4,6 @@ const process = require('node:process')
 
 function follow(childProcess) {
 	return new Promise((resolve, reject) => {
-		let lastError
 		let stderr = ''
 		let stdout = ''
 
@@ -20,15 +19,11 @@ function follow(childProcess) {
 			stdout += data
 		})
 
-		childProcess.on('error', (error) => {
-			lastError = error
-		})
-
 		childProcess.on('close', (code) => {
 			if (code === 0) {
 				resolve({ stdout, stderr })
 			} else {
-				const error = new Error(lastError)
+				const error = new Error(stderr)
 
 				error.code = code
 
