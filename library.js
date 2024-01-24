@@ -39,8 +39,15 @@ function follow(childProcess) {
 module.exports.makeSpawnTag = function makeSpawnTag(spawn = nodeSpawn) {
 	const $ = function (tpl, ...tplArgs) {
 		if (!Array.isArray(tpl)) {
-			return $
+			return $.bind({
+				contextIsSpawnOptions: Symbol.for('contextIsSpawnOptions'),
+				...tpl
+			})
 		}
+
+		const contextIsSpawnOptions = 'contextIsSpawnOptions' in this && this['contextIsSpawnOptions'] === Symbol.for('contextIsSpawnOptions')
+
+		const spawnOptions = contextIsSpawnOptions ? this : {}
 
 		return new Promise((resolve, reject) => {
 			const text = tpl
@@ -71,7 +78,7 @@ module.exports.makeSpawnTag = function makeSpawnTag(spawn = nodeSpawn) {
 
 			console.log('$', text)
 
-			const cp = spawn(cmd, cmdArgs, { env: { ...process.env, ...env }, shell: true })
+			const cp = spawn(cmd, cmdArgs, { ...(contextIsSpawnOptions ? spawnOptions : {}), env: { ...process.env, ...env }, shell: true })
 
 			follow(cp).then(resolve).catch(reject)
 		})
