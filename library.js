@@ -7,6 +7,14 @@ function follow(childProcess) {
 		let stderr = ''
 		let stdout = ''
 
+		const forwardSigint = function () {
+			console.log(`forwarding SIGINT to child process: ${childProcess.pid}`)
+
+			childProcess.kill('SIGINT')
+		}
+
+		process.on('SIGINT', forwardSigint)
+
 		childProcess.stderr.on('data', (data) => {
 			process.stderr.write(data)
 
@@ -20,6 +28,8 @@ function follow(childProcess) {
 		})
 
 		childProcess.on('close', (code) => {
+			process.off('SIGINT', forwardSigint)
+
 			if (code === 0) {
 				resolve({ stdout, stderr })
 			} else {
