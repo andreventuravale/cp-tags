@@ -10,7 +10,6 @@ function follow(childProcess) {
     const forwardSigint = function () {
       console.log();
       console.log(`forwarding SIGINT to child process: ${childProcess.pid}`);
-      console.log();
 
       childProcess.kill("SIGINT");
     };
