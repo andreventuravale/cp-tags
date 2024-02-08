@@ -96,9 +96,11 @@ module.exports.makeSpawnTag = function makeSpawnTag(
       !silent && console.log("$", text);
 
       const cp = spawn(cmd, cmdArgs, {
+        //-----------------
         env: { ...process.env, ...env },
         shell: true,
-        stdio: silent ?? undefined,
+        ...(silent ? { stdio: "ignore" } : {}),
+        //-----------------
         ...(contextIsSpawnOptions ? spawnOptions : {}),
       });
 
