@@ -16,13 +16,13 @@ function follow(childProcess) {
 
     process.on("SIGINT", forwardSigint);
 
-    childProcess.stderr.on("data", (data) => {
+    childProcess.stderr?.on("data", (data) => {
       process.stderr.write(data);
 
       stderr += data;
     });
 
-    childProcess.stdout.on("data", (data) => {
+    childProcess.stdout?.on("data", (data) => {
       process.stdout.write(data);
 
       stdout += data;
@@ -47,7 +47,10 @@ function follow(childProcess) {
 /**
  * @param {import("node:child_process").spawn} spawn
  */
-module.exports.makeSpawnTag = function makeSpawnTag(spawn = nodeSpawn) {
+module.exports.makeSpawnTag = function makeSpawnTag(
+  spawn = nodeSpawn,
+  { silent = false } = {},
+) {
   const $ = function (tpl, ...tplArgs) {
     if (!Array.isArray(tpl)) {
       return $.bind({
@@ -90,12 +93,13 @@ module.exports.makeSpawnTag = function makeSpawnTag(spawn = nodeSpawn) {
         .replace(/([^\\]["']|\b) /g, (_, $) => `${$}${sep}`)
         .split(sep);
 
-      console.log("$", text);
+      !silent && console.log("$", text);
 
       const cp = spawn(cmd, cmdArgs, {
-        ...(contextIsSpawnOptions ? spawnOptions : {}),
         env: { ...process.env, ...env },
         shell: true,
+        stdio: silent ?? undefined,
+        ...(contextIsSpawnOptions ? spawnOptions : {}),
       });
 
       follow(cp).then(resolve).catch(reject);
