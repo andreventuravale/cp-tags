@@ -1,13 +1,21 @@
 {
   "name": "cp-tags",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Tags around child_process.",
   "main": "./library.js",
+  "scripts": {
+    "format": "npx prettier . --write",
+    "lint": "eslint -c .eslintrc.js --fix"
+  },
   "keywords": [
+    "child_process",
     "shell",
     "shell script"
   ],
   "repository": "https://github.com/andreventuravale/cp-tags",
   "author": "andreventuravale <andreventuravale@gmail.com>",
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
 }

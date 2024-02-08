@@ -1,98 +1,107 @@
-const { spawn: nodeSpawn } = require('node:child_process')
-const { randomUUID } = require('node:crypto')
-const process = require('node:process')
+const { spawn: nodeSpawn } = require("node:child_process");
+const { randomUUID } = require("node:crypto");
+const process = require("node:process");
 
 function follow(childProcess) {
-	return new Promise((resolve, reject) => {
-		let stderr = ''
-		let stdout = ''
+  return new Promise((resolve, reject) => {
+    let stderr = "";
+    let stdout = "";
 
-		const forwardSigint = function () {
-			console.log(`forwarding SIGINT to child process: ${childProcess.pid}`)
+    const forwardSigint = function () {
+      console.log();
+      console.log(`forwarding SIGINT to child process: ${childProcess.pid}`);
+      console.log();
 
-			childProcess.kill('SIGINT')
-		}
+      childProcess.kill("SIGINT");
+    };
 
-		process.on('SIGINT', forwardSigint)
+    process.on("SIGINT", forwardSigint);
 
-		childProcess.stderr.on('data', (data) => {
-			process.stderr.write(data)
+    childProcess.stderr.on("data", (data) => {
+      process.stderr.write(data);
 
-			stderr += data
-		})
+      stderr += data;
+    });
 
-		childProcess.stdout.on('data', (data) => {
-			process.stdout.write(data)
+    childProcess.stdout.on("data", (data) => {
+      process.stdout.write(data);
 
-			stdout += data
-		})
+      stdout += data;
+    });
 
-		childProcess.on('close', (code) => {
-			process.off('SIGINT', forwardSigint)
+    childProcess.on("close", (code) => {
+      process.off("SIGINT", forwardSigint);
 
-			if (code === 0) {
-				resolve({ stdout, stderr })
-			} else {
-				const error = new Error(stderr)
+      if (code === 0) {
+        resolve({ stdout, stderr });
+      } else {
+        const error = new Error(stderr);
 
-				error.code = code
+        error.code = code;
 
-				reject(error)
-			}
-		})
-	})
+        reject(error);
+      }
+    });
+  });
 }
 
 /**
- * @param {import("node:child_process").spawn} spawn 
+ * @param {import("node:child_process").spawn} spawn
  */
 module.exports.makeSpawnTag = function makeSpawnTag(spawn = nodeSpawn) {
-	const $ = function (tpl, ...tplArgs) {
-		if (!Array.isArray(tpl)) {
-			return $.bind({
-				contextIsSpawnOptions: Symbol.for('contextIsSpawnOptions'),
-				...tpl
-			})
-		}
+  const $ = function (tpl, ...tplArgs) {
+    if (!Array.isArray(tpl)) {
+      return $.bind({
+        contextIsSpawnOptions: Symbol.for("contextIsSpawnOptions"),
+        ...tpl,
+      });
+    }
 
-		const contextIsSpawnOptions = 'contextIsSpawnOptions' in this && this['contextIsSpawnOptions'] === Symbol.for('contextIsSpawnOptions')
+    const contextIsSpawnOptions =
+      "contextIsSpawnOptions" in this &&
+      this["contextIsSpawnOptions"] === Symbol.for("contextIsSpawnOptions");
 
-		const spawnOptions = contextIsSpawnOptions ? this : {}
+    const spawnOptions = contextIsSpawnOptions ? this : {};
 
-		return new Promise((resolve, reject) => {
-			const text = tpl
-				.map((item) => [item.replace(/\n/g, ' '), tplArgs.shift()])
-				.flat()
-				.filter(Boolean)
-				.join('')
+    return new Promise((resolve, reject) => {
+      const text = tpl
+        .map((item) => [item.replace(/\n/g, " "), tplArgs.shift()])
+        .flat()
+        .filter(Boolean)
+        .join("");
 
-			let expr = text
+      let expr = text;
 
-			const matchVar = /^([\w]+)=('(?:[^']|\\')*'|"(?:[^"]|\\")*"|(?:[^ ]|\\ )+|) */
+      const matchVar =
+        /^([\w]+)=('(?:[^']|\\')*'|"(?:[^"]|\\")*"|(?:[^ ]|\\ )+|) */;
 
-			const env = {}
+      const env = {};
 
-			while (matchVar.test(expr)) {
-				const [input, name, value] = matchVar.exec(expr)
+      while (matchVar.test(expr)) {
+        const [input, name, value] = matchVar.exec(expr);
 
-				env[name] = value
+        env[name] = value;
 
-				expr = expr.slice(matchVar.lastIndex + input.length)
-			}
+        expr = expr.slice(matchVar.lastIndex + input.length);
+      }
 
-			const sep = randomUUID()
+      const sep = randomUUID();
 
-			const [cmd, ...cmdArgs] = expr
-				.replace(/([^\\]["']|\b) /g, (_, $) => `${$}${sep}`)
-				.split(sep)
+      const [cmd, ...cmdArgs] = expr
+        .replace(/([^\\]["']|\b) /g, (_, $) => `${$}${sep}`)
+        .split(sep);
 
-			console.log('$', text)
+      console.log("$", text);
 
-			const cp = spawn(cmd, cmdArgs, { ...(contextIsSpawnOptions ? spawnOptions : {}), env: { ...process.env, ...env }, shell: true })
+      const cp = spawn(cmd, cmdArgs, {
+        ...(contextIsSpawnOptions ? spawnOptions : {}),
+        env: { ...process.env, ...env },
+        shell: true,
+      });
 
-			follow(cp).then(resolve).catch(reject)
-		})
-	}
+      follow(cp).then(resolve).catch(reject);
+    });
+  };
 
-	return $
-}
+  return $;
+};
